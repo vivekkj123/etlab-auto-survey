@@ -1,8 +1,8 @@
 import { defineManifest } from '@crxjs/vite-plugin'
 
 export default defineManifest({
-  name: 'Linways Auto Feedback Filler',
-  description: '',
+  name: 'ETLAB Auto Survey Filler',
+  description: 'Simple chrome extension for filling all surveys at one click',
   version: '1.0.0',
   manifest_version: 3,
   icons: {
@@ -19,10 +19,7 @@ export default defineManifest({
     service_worker: 'src/background/index.js',
     type: 'module',
   },
-  host_permissions:[
-    'http://*.linways.com/evaluation/*/*',
-    'https://*.linways.com/evaluation/*/*'
-  ],
+  host_permissions: ['http://*.etlab.in/survey/*/*', 'https://*.etlab.in/survey/*/*'],
   content_scripts: [
     {
       matches: ['http://*/*', 'https://*/*'],

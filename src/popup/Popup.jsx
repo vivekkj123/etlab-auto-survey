@@ -2,56 +2,41 @@ import { useEffect, useState } from 'react'
 import './Popup.css'
 
 function App() {
-  const [Name, setName] = useState('')
   const [EvaluationPage, setEvaluationPage] = useState(false)
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const currentUrl = tabs[0].url
-      // To get name of faculty
-      if (currentUrl.includes('.linways.com/evaluation/')) {
+      if (currentUrl.includes('.etlab.in/survey/user/answer')) {
         setEvaluationPage(true)
-        chrome.runtime.sendMessage({ action: 'getFacultyName' }, function (res) {
-          setName(res.facultyName)
-        })
       }
     })
   }, [])
   return (
     <main>
-      <h2>Linways Auto Feedback Filler</h2>
+      <h2>ETLAB Auto Survey Filler</h2>
       {EvaluationPage ? (
         <>
-          <p>Choose the performance level for {Name}</p>
-          {/* different actions need to be sent for different performance levels */}
           <div className="wrapper">
             <button
               onClick={() => {
                 chrome.runtime.sendMessage({ action: 'markGood' })
               }}
-              title="Randomly Chooses anyone: Excellent / Very Good"
+              title="Selects first radio buttons for all questions (Excellent)"
             >
-              Good
+              Excellent
             </button>
             <button
               onClick={() => {
-                chrome.runtime.sendMessage({ action: 'markAverage' })
+                chrome.runtime.sendMessage({ action: 'markRandom' })
               }}
-              title="Randomly Chooses anyone: Good  / Fair"
+              title="Randomly Chooses any options (Use at your own risk)"
             >
-              Average
-            </button>
-            <button
-              onClick={() => {
-                chrome.runtime.sendMessage({ action: 'markPoor' })
-              }}
-              title="Randomly Chooses anyone: Poor / Fair"
-            >
-              Poor
+              Random
             </button>
           </div>
         </>
       ) : (
-        <h3>Please Execute me on a Linways Evaluation Page</h3>
+        <h3>Please Execute me on a ETLAB Survey Page</h3>
       )}
     </main>
   )

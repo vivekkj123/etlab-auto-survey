@@ -1,44 +1,69 @@
-// Function to generate a random number within min,max range
-function randomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min) + min)
-}
-// Identify and perfrom whether which action is triggered by user
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  let buttonIndex
-  for (let i = 0; i < 50; i++) {
-    var buttons = document.getElementsByName(`right${i}`)
-    // if markGood is triggered, then set answers to questions as Excellent / Very Good
-    if (request.action === 'markGood') {
-      buttonIndex = randomNumber(0, 2)
-    }
-    // if markAverage is triggered, then set answers to questions as Good  / Fair
-    else if (request.action === 'markAverage') {
-      buttonIndex = randomNumber(2, 4)
-    }
-    // if markPoor is triggered, then set answers to questions as Poor / Fair
-    else if (request.action === 'markPoor') {
-      buttonIndex = randomNumber(3, 5)
-    }
-    // make the radio button checked
-    if (buttons[buttonIndex]) {
-      buttons[buttonIndex].checked = true
-    }
-    // make submit button enabled
-    document.querySelector('input[value="Submit"]').disabled = false
-  }
-})
+  var form = document.querySelector('form')
+  var listItems = document.querySelectorAll('li')
 
-/*
-To get name of faculty
------------------------
-Name of the faculty is available by targetting this classname:  '.photoholder > table > tbody > tr > td > span > img' Fetch it from the evaluation page and send it as response
-*/
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === 'getFacultyName') {
-    let facultyName = document.querySelector(
-      '.photoholder > table > tbody > tr > td > span > img',
-    ).title
-    sendResponse({ facultyName })
-    return true
+  function markGood() {
+    listItems.forEach(function (listItem) {
+      var question = listItem.querySelector('.question')
+      if (question) {
+        var answerDiv = listItem.querySelector('.answer')
+        var firstRadioButton = answerDiv.querySelector('input[type="radio"]')
+        if (firstRadioButton) {
+          firstRadioButton.checked = true
+        }
+        handleTextarea(answerDiv, question)
+      }
+    })
   }
+
+  function markRandom() {
+    listItems.forEach(function (listItem) {
+      var question = listItem.querySelector('.question')
+      if (question) {
+        var answerDiv = listItem.querySelector('.answer')
+        var inputElements = answerDiv.querySelectorAll('input[type="radio"], input[type="text"]')
+        var radioButtons = Array.from(inputElements).filter(function (inputElement) {
+          return inputElement.type === 'radio'
+        })
+
+        if (radioButtons.length > 0) {
+          var randomIndex = Math.floor(Math.random() * radioButtons.length)
+          radioButtons.forEach(function (radioButton) {
+            radioButton.checked = false
+          })
+          radioButtons[randomIndex].checked = true
+        }
+
+        handleTextarea(answerDiv, question)
+      }
+    })
+  }
+
+  function handleTextarea(answerDiv, question) {
+    var textarea = answerDiv.querySelector('textarea')
+    if (textarea) {
+      if (question.textContent.toLowerCase().includes('age')) {
+        var randomAge = Math.floor(Math.random() * 5) + 20
+        textarea.value = randomAge
+      } else if (
+        question.textContent.toLowerCase().includes('observation') &&
+        question.textContent.toLowerCase().includes('suggestions')
+      ) {
+        textarea.value = 'Nothing'
+      }
+    }
+  }
+  var surveyTitle = document.querySelector('h5')
+
+  if (request.action === 'markGood') {
+    markGood()
+  } else if (request.action === 'markRandom') {
+    markRandom()
+  }
+  if (surveyTitle && surveyTitle.textContent.trim() === 'Student Satisfaction Survey') {
+    alert('Please Fill first 5 Questions in this page by yourself')
+  } else {
+    form.submit()
+  }
+  // form.submit();
 })
