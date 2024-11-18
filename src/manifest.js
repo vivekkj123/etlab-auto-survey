@@ -3,7 +3,7 @@ import { defineManifest } from '@crxjs/vite-plugin'
 export default defineManifest({
   name: 'ETLAB Auto Survey Filler',
   description: 'Simple chrome extension for filling all surveys at one click',
-  version: '1.0.0',
+  version: '1.1.0',
   manifest_version: 3,
   icons: {
     16: 'img/logo-16.png',
