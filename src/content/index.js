@@ -79,11 +79,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     alert('Please Fill first 5 Questions in this page by yourself')
   } else {
     var submitButton = document.querySelector('button[name="submitButton"]')
-  }
-  if (submitButton) {
-    submitButton.click()
-  } else {
-    form.submit()
+    if (submitButton) {
+      submitButton.click()
+    } else {
+      form.submit()
+    }
   }
   // form.submit();
 })
